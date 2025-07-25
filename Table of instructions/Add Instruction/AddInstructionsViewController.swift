@@ -5,6 +5,7 @@ class AddInstructionsViewController: UIViewController {
     
     @IBOutlet var textField: UITextField!
     @IBOutlet var button: UIButton!
+    @IBOutlet var missionTextField: UITextField!
     
     var viewMadel: AddInstructionsViewModel!
     var cancellables = Set<AnyCancellable>()
@@ -16,7 +17,7 @@ class AddInstructionsViewController: UIViewController {
     }
 
     private func addNavigationBarButton() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(сloseVc))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(touchButtonSave))
     }
     
     private func chooseWoker() {
@@ -25,7 +26,9 @@ class AddInstructionsViewController: UIViewController {
             .map { workers in
                 workers.map { worker in
                     UIAction(title: worker.name) {[weak self] action in
-                        self?.button.setTitle(worker.name, for: .normal)
+                        guard let self else { return }
+                        button.setTitle(worker.name, for: .normal)
+                        viewMadel.worker = worker
                     }
                 }
             }
@@ -39,7 +42,17 @@ class AddInstructionsViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    @objc private func сloseVc() {
+    @objc private func touchButtonSave() {
+        guard let missionText = missionTextField.text,
+              let descriptionText = textField.text
+        else { return }
+        
+        viewMadel.addTaskForWorker(mission: missionText, description: descriptionText) {[weak self] in
+            let alert = UIAlertController(title: "Выберете работника", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .cancel))
+            self?.present(alert, animated: true)
+            
+        }
         navigationController?.popViewController(animated: true)
     }
     
