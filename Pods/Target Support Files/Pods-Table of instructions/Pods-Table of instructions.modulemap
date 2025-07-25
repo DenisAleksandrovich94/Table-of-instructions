@@ -1,0 +1,6 @@
+framework module Pods_Table_of_instructions {
+  umbrella header "Pods-Table of instructions-umbrella.h"
+
+  export *
+  module * { export * }
+}
